@@ -4,7 +4,7 @@ if (!$fp) {die("Failed to connect");}
 
 $response = json_decode(event_socket_request($fp, "api show registrations as json"), true);
 if($response['row_count'] > 0) {
-  echo json_encode($response['rows'][0]);
+  echo json_encode($response['rows']);
 } else {
   die(json_encode(array("error"=>"No registrations found")));
 }
