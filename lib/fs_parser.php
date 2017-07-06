@@ -4,7 +4,11 @@ function parse_fs($command) {
   if (!$fp) {
     die(json_encode(array("success" => False, "reason" => "Failed to connect to event socket")));
   }
+
   $response = event_socket_request($fp, $command);
+
+  $lines = explode("\n", $response);
+
   $keys = explode("|", array_shift($lines));
   $out = array();
   foreach($lines as $orig_line) {
