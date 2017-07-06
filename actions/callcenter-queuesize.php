@@ -1,8 +1,9 @@
 <?php
 require('lib/fs_parser.php');
 $counts = array();
-foreach(parse_fs("api callcenter_config queue list members ".$_POST['queue']) as $user) {
-  if(!in_array($counts, $user['state'])) {
+$users = parse_fs("api callcenter_config queue list members ".$_POST['queue']);
+foreach($users as $user) {
+  if(!in_array($user['state'], $counts)) {
     $counts[$user['state']] = 0;
   }
   $counts[$user['state']]++;
