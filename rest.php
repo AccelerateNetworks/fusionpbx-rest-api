@@ -13,6 +13,8 @@ if(isset($_POST['action'])) {
 	$settings = array();
 	if(isset($app_settings[$action])) {
 		$settings = $app_settings[$action];
+	} else {
+		$settings = $app_settings;
 	}
 	$file = __DIR__."/actions/".$action.".php";
 	if(file_exists($file)) {
