@@ -8,7 +8,7 @@ if (substr($_POST['file'], 0, 28) === "/usr/share/freeswitch/sounds") {
 } elseif(substr($_POST['file'], 0, 4) === "http") {
   $file = $_POST['file'];
 } else {
-  $file = "/usr/share/freeswitch/sounds/en/us/callie/misc/8000/ivr-congratulations_you_pressed_star.wav"
+  $file = "/usr/share/freeswitch/sounds/en/us/callie/misc/8000/ivr-congratulations_you_pressed_star.wav";
 }
 
 $command = "api originate ".$to." '&playback(".$file.")' XML default LEGIT_CALL ".$_POST['cid'];
