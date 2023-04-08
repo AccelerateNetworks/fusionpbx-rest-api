@@ -16,7 +16,7 @@ if(!permission_exists('rest_api_manage_keys')) {
 }
 
 if($_POST['key_uuid']) { // update
-    $sql = "update rest_api_keys set name = :name where key_uuid = :key_uuid";
+    $sql = "UPDATE rest_api_keys SET name = :name WHERE key_uuid = :key_uuid";
     $parameters['key_uuid'] = $_POST['key_uuid'];
     $parameters['name'] = $_POST['name'];
     $database = new database;
@@ -32,7 +32,7 @@ $name = "";
 $key_secret = null;
 
 if($_GET['key_uuid']) {
-    $sql = "select name from rest_api_keys where key_uuid = :key_uuid";
+    $sql = "SELECT name FROM rest_api_keys WHERE key_uuid = :key_uuid";
     $parameters['key_uuid'] = $key_uuid;
     $database = new database;
     $name = $database->select($sql, $parameters, 'column');
@@ -41,13 +41,32 @@ if($_GET['key_uuid']) {
     $key_uuid = uuid();
     $key_secret = generate_password(20, 3);
 
-    $sql = "insert into rest_api_keys (key_uuid, key_secret, created) values (:key_uuid, :key_secret, now())";
+    $sql = "INSERT INTO rest_api_keys (key_uuid, key_secret, created) VALUES (:key_uuid, :key_secret, now())";
     $parameters['key_uuid'] = $key_uuid;
     $parameters['key_secret'] = password_hash($key_secret, PASSWORD_DEFAULT, array('cost' => 10));
     $database = new database;
     $database->execute($sql, $parameters);
     unset($parameters);
 }
+
+echo "<form method='post' action='index.php'>";
+echo modal::create([
+	'id'=>'modal-delete',
+	'type'=>'delete',
+	'actions'=>button::create([
+		'type'=>'submit',
+		'label'=>"delete",
+		'icon'=>'check',
+		'id'=>'btn_delete',
+		'style'=>'float: right; margin-left: 15px;',
+		'collapse'=>'never',
+		'name'=>'action',
+		'value'=>'delete',
+		'onclick'=>"modal_close();"
+	]
+)]);
+echo "<input type='hidden' name='key_uuid' id='key_uuid' value='".$key_uuid."' />";
+echo "</form>";
 
 echo "<form method='post' name='frm' id='frm'>\n";
 echo "<input type='hidden' name='key_uuid' value='".$key_uuid."' />";

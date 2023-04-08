@@ -15,6 +15,15 @@ if(!permission_exists('rest_api_manage_keys')) {
     die();
 }
 
+if($_POST['action'] == "delete" && $_POST['key_uuid']) {
+	$sql = "DELETE FROM rest_api_keys WHERE key_uuid = :key_uuid";
+	$parameters['key_uuid'] = $_POST['key_uuid'];
+	$database = new database;
+	$keys = $database->select($sql, $parameters, 'all');
+	unset($parameters);
+}
+
+echo "<form method='post'>";
 echo modal::create([
 	'id'=>'modal-delete',
 	'type'=>'delete',
@@ -30,6 +39,8 @@ echo modal::create([
 		'onclick'=>"modal_close();"
 	]
 )]);
+echo "<input type='hidden' name='key_uuid' id='key_uuid'/>";
+echo "</form>";
 
 echo "<div class='action_bar' id='action_bar'>\n";
 echo "	<div class='heading'><b>REST API Keys</b></div>\n";
@@ -41,7 +52,7 @@ echo "</div>\n";
 echo "<br /><br />\n";
 echo "endpoint: <code>https://".$_SERVER['HTTP_HOST']."/app/rest_api/rest.php</code>\n";
 
-$sql = "select key_uuid, name, created, last_used from rest_api_keys";
+$sql = "select key_uuid, name, created, last_used from rest_api_keys ORDER BY last_used DESC";
 $database = new database;
 $keys = $database->select($sql, null, 'all');
 unset($parameters);
@@ -59,11 +70,11 @@ foreach($keys as $key) {
 ?>
 <tr>
 	<td><a href="key_edit.php?key_uuid=<?php echo $key['key_uuid']; ?>"><?php echo $key['name']; ?></a></td>
-	<td><a href="key_edit.php?key_uuid=<?php echo $key['key_uuid']; ?>"><?php echo $key['key_uuid']; ?></a></td>
+	<td><a href="key_edit.php?key_uuid=<?php echo $key['key_uuid']; ?>"><code><?php echo $key['key_uuid']; ?></code></a></td>
 	<td><?php echo $key['created']; ?></td>
 	<td><?php echo $key['last_used']; ?></td>
 	<td class="middle button"><?php
-		echo button::create(['type'=>'button','label'=>'doesnt work','icon'=>$_SESSION['theme']['button_icon_delete'],'onclick'=>"modal_open('modal-delete','btn_delete');"]);
+		echo button::create(['type'=>'button','icon'=>$_SESSION['theme']['button_icon_delete'],'onclick'=>"document.querySelector('#key_uuid').value = '".$key['key_uuid']."'; modal_open('modal-delete','btn_delete');"]);
 	?></td>
 </tr>
 <?php
