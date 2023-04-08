@@ -1,6 +1,7 @@
 <?php
 require_once "root.php";
 require_once "resources/require.php";
+require_once "lib/input_validation.php";
 
 function return_error($msg) {
 	echo json_encode(array("error" => $msg));
@@ -33,9 +34,7 @@ $database = new database;
 $database->execute($sql, $parameters);
 unset($parameters);
 
-if(!isset($_POST['action'])) {
-	return_error("unknown action");
-}
+ensure_parameters(array("action"));
 
 $action = strtolower($_POST['action']);
 $file = __DIR__."/actions/".$action.".php";

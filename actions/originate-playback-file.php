@@ -1,4 +1,5 @@
 <?php
+// NOTE: Doesn't work anymore because $settings is gone
 $fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
 if (!$fp) {die("Failed to connect");}
 
