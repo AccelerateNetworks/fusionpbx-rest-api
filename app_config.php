@@ -17,3 +17,51 @@ $apps[$x]['description']['fr-ca'] = "";
 $apps[$x]['description']['fr-ch'] = "";
 $apps[$x]['description']['pt-pt'] = "";
 $apps[$x]['description']['pt-br'] = "";
+
+
+$y = 0;
+$z = 0;
+
+$apps[$x]['db'][$y]['table']['name'] = "rest_api_keys";
+$apps[$x]['db'][$y]['table']['parent'] = "";
+
+$apps[$x]['db'][$y]['fields'][$z]['name']['text'] = 'key_uuid';
+$apps[$x]['db'][$y]['fields'][$z]['type']['pgsql'] = 'uuid';
+$apps[$x]['db'][$y]['fields'][$z]['type']['sqlite'] = 'text';
+$apps[$x]['db'][$y]['fields'][$z]['type']['mysql'] = 'char(36)';
+$apps[$x]['db'][$y]['fields'][$z]['description']['en-us'] = 'key identifier';
+$z++;
+
+$apps[$x]['db'][$y]['fields'][$z]['name']['text'] = 'name';
+$apps[$x]['db'][$y]['fields'][$z]['type']['pgsql'] = "text";
+$apps[$x]['db'][$y]['fields'][$z]['type']['sqlite'] = "text";
+$apps[$x]['db'][$y]['fields'][$z]['type']['mysql'] = "longtext";
+$apps[$x]['db'][$y]['fields'][$z]['description']['en-us'] = 'optional human readable identifier';
+$z++;
+
+$apps[$x]['db'][$y]['fields'][$z]['name']['text'] = 'key_secret';
+$apps[$x]['db'][$y]['fields'][$z]['type']['pgsql'] = "text";
+$apps[$x]['db'][$y]['fields'][$z]['type']['sqlite'] = "text";
+$apps[$x]['db'][$y]['fields'][$z]['type']['mysql'] = "longtext";
+$apps[$x]['db'][$y]['fields'][$z]['description']['en-us'] = 'the secret for authenticating';
+$z++;
+
+$apps[$x]['db'][$y]['fields'][$z]['name'] = "created";
+$apps[$x]['db'][$y]['fields'][$z]['type']['pgsql'] = 'timestamptz';
+$apps[$x]['db'][$y]['fields'][$z]['type']['sqlite'] = 'date';
+$apps[$x]['db'][$y]['fields'][$z]['type']['mysql'] = 'date';
+$apps[$x]['db'][$y]['fields'][$z]['description']['en-us'] = "date this key was created";
+$z++;
+
+$apps[$x]['db'][$y]['fields'][$z]['name'] = "last_used";
+$apps[$x]['db'][$y]['fields'][$z]['type']['pgsql'] = 'timestamptz';
+$apps[$x]['db'][$y]['fields'][$z]['type']['sqlite'] = 'date';
+$apps[$x]['db'][$y]['fields'][$z]['type']['mysql'] = 'date';
+$apps[$x]['db'][$y]['fields'][$z]['description']['en-us'] = "date this key was last used";
+$z++;
+
+$y=0;
+
+$apps[$x]['permissions'][$y]['name'] = "rest_api_manage_keys";
+$apps[$x]['permissions'][$y]['groups'][] = "superadmin";
+$y++;
