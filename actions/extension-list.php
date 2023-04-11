@@ -1,8 +1,8 @@
 <?php
-ensure_parameters(array("domain"));
+ensure_parameters(array("domain_uuid"));
 
-$sql = "SELECT v_extensions.extension_uuid, v_extensions.extension FROM v_extensions, v_domains WHERE v_extensions.domain_uuid = v_domains.domain_uuid AND v_domains.domain_name = :domain";
-$parameters['domain'] = $_POST['domain'];
+$sql = "SELECT extension_uuid, extension, emergency_caller_id_number FROM v_extensions WHERE v_extensions.domain_uuid = :domain_uuid";
+$parameters['domain_uuid'] = $_POST['domain_uuid'];
 $database = new database;
 $extensions = $database->select($sql, $parameters, 'all');
 echo json_encode($extensions);

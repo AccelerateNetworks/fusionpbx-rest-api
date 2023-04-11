@@ -1,5 +1,5 @@
 <?php
-ensure_parameters(array("domain", "extension"));
+ensure_parameters(array("domain_uuid", "extension"));
 
 $fields = array(
     "extension_uuid",
@@ -62,7 +62,7 @@ $fields = array(
 );
 
 $sql = "SELECT v_extensions.".implode(", v_extensions.", $fields);
-$sql .= " FROM v_extensions, v_domains WHERE v_extensions.domain_uuid = v_domains.domain_uuid AND v_domains.domain_name = :domain AND v_extensions.extension_uuid = :extension";
+$sql .= " FROM v_extensions WHERE domain_uuid = :domain_uuid AND extension_uuid = :extension";
 $parameters['domain'] = $_POST['domain'];
 $parameters['extension'] = $_POST['extension'];
 $database = new database;
