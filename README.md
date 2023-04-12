@@ -82,3 +82,15 @@ get all details of an extension
 | `domain_uuid` | yes      | Domain to list extensions on |
 
 List number, UUID and a few other details of all extensions on a given domain.
+
+
+## `ringgroup-create`
+| Parameter      | Required | Description |
+|----------------|----------|-------------|
+| `domain_uuid`  | yes      | domain to create the ring group on |
+| `name`         | yes      | name for the ring group |
+| `extension`    | yes      | Extension to route TO the ring group |
+| `destinations` | yes      | JSON array of extensions to send calls from the ring group. Example: `[{"number": "100"}, {"number": "101"}, {"number": "102"}]` |
+| `strategy`     | yes      | one of: `simultaneous`, `sequence`, `enterprise`, `rollover` or `random` |
+
+Create a ring group

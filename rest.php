@@ -12,26 +12,24 @@ if(!isset($_SERVER['PHP_AUTH_USER'])) {
 	return_error("unauthorized");
 }
 
-// $auth = explode($_SERVER['HTTP_AUTHORIZATION'], ":", 2);
-// if(sizeof($auth) != 2) {
-// 	// return_error("unauthorized");
-// 	return_error("malformed credentials: ".implode(" ", $auth));
-// }
-
-$sql = "select key_secret from rest_api_keys where key_uuid = :key_id";
+// get the hash of the secret key for this key id out of the database
+$sql = "SELECT key_secret FROM rest_api_keys WHERE key_uuid = :key_id";
 $parameters['key_id'] = $_SERVER['PHP_AUTH_USER'];
 $database = new database;
 $secret = $database->select($sql, $parameters, 'column');
-unset($parameters);
+if(!$secret) {
+	return_error("unauthorized");
+}
 
+// verify the hash
 if(password_verify($secret, $_SERVER['PHP_AUTH_PW'])) {
 	return_error("unauthorized");
 }
 
-$sql = "update rest_api_keys set last_used = now() where key_uuid = :key_uuid";
-$parameters['key_uuid'] = $_SERVER['PHP_AUTH_USER'];
+// set the key last used time
+$sql = "UPDATE rest_api_keys SET last_used = NOW() WHERE key_uuid = :key_id";
 $database = new database;
-$database->execute($sql, $parameters);
+$result = $database->execute($sql, $parameters);
 unset($parameters);
 
 ensure_parameters(array("action"));
