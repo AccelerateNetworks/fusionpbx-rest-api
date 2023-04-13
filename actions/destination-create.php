@@ -53,6 +53,18 @@ $array["destinations"][] = array(
     "destination_enabled" => "true",
     "destination_description" => ""
 );
+
+$dialplan_xml = "<extension name=\"".$_POST['number']."\" continue=\"false\" uuid=\"".$dialplan_uuid."\">\n";
+$dialplan_xml .= "\t<condition field=\"destination_number\" expression=\"^\+?1?(".$_POST['number'].")$\">\n";
+$dialplan_xml .= "\t\t<action application=\"export\" data=\"call_direction=inbound\" inline=\"true\" />\n";
+$dialplan_xml .= "\t\t<action application=\"set\" data=\"domain_uuid=".$_POST['domain_uuid']."\" inline=\"true\" />\n";
+$dialplan_xml .= "\t\t<action application=\"set\" data=\"domain_name=".$domain_name."\" inline=\"true\" />\n";
+$dialplan_xml .= "\t\t<action application=\"set\" data=\"hangup_after_bridge=true\" inline=\"true\"/>\n";
+$dialplan_xml .= "\t\t<action application=\"set\" data=\"continue_on_fail=true\" inline=\"true\"/>\n";
+$dialplan_xml .= "\t\t<action application=\"transfer\" data=\"".$extension." XML ".$domain_name."\"/>\n";
+$dialplan_xml .= "\t</condition>\n";
+$dialplan_xml .= "</extension>";
+
 $array["dialplans"][] = array(
     "app_uuid" => "c03b422e-13a8-bd1b-e42b-b6b9b4d27ce4", // inbound routes must have the this app_uuid
     "dialplan_uuid" => $dialplan_uuid,
@@ -64,7 +76,7 @@ $array["dialplans"][] = array(
     "dialplan_order" => "100",
     "dialplan_enabled" => "true",
     "dialplan_description" => "",
-    "dialplan_xml" => "\n\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t<\/condition>\n<\/extension>\n",
+    "dialplan_xml" => $dialplan_xml,
     "dialplan_details" => array(
         array(
             "domain_uuid" => $_POST['domain_uuid'],

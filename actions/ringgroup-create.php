@@ -70,6 +70,15 @@ $array["ring_groups"][] = array(
     "ring_group_timeout_data" => "",
     "ring_group_destinations" => $ring_group_destinations
 );
+
+$dialplan_xml = "<extension name=\"".$_POST['name']."\" continue=\"\" uuid=\"".$dialplan_uuid."\">\n";
+$dialplan_xml .= "\t<condition field=\"destination_number\" expression=\"^".$_POST['extension']."$\">\n";
+$dialplan_xml .= "\t\t<action application=\"ring_ready\" data=\"\" />\n";
+$dialplan_xml .= "\t\t<action application=\"set\" data=\"ring_group_uuid=".$ring_group_uuid."\" />\n";
+$dialplan_xml .= "\t\t<action application=\"lua\" data=\"app.lua ring_groups\" />\n";
+$dialplan_xml .= "\t</condition>\n";
+$dialplan_xml .= "</extension>";
+
 $array["dialplans"][] = array(
     "domain_uuid" => $_POST['domain_uuid'],
     "dialplan_uuid" => $dialplan_uuid,
@@ -77,7 +86,7 @@ $array["dialplans"][] = array(
     "dialplan_number" => $_POST['extension'],
     "dialplan_context" => $domain_name,
     "dialplan_continue" => "false",
-    "dialplan_xml" => "\n\t\n\t\t\n\t\t\n\t\t\n\t<\/condition>\n<\/extension>\n",
+    "dialplan_xml" => $dialplan_xml,
     "dialplan_order" => "101",
     "dialplan_enabled" => "true",
     "dialplan_description" => "",
