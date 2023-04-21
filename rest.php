@@ -32,12 +32,28 @@ $database = new database;
 $result = $database->execute($sql, $parameters);
 unset($parameters);
 
-ensure_parameters(array("action"));
+$body = json_decode(file_get_contents('php://input'));
 
-$action = strtolower($_POST['action']);
+$validation_errors = ensure_parameters($body, array("action"));
+if($validation_errors) {
+	echo json_encode($validation_errors);
+	die();
+}
+
+$action = strtolower($body->action);
 $file = __DIR__."/actions/".$action.".php";
 if(!file_exists($file)) {
 	return_error("unknown action");
+	die();
 }
 
 require($file);
+$validation_errors = ensure_parameters($body, $required_params);
+if($validation_errors) {
+	echo json_encode($validation_errors);
+	die();
+}
+
+if(function_exists('do_action')) {
+	echo json_encode(do_action($body));
+}

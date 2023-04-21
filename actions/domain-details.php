@@ -1,16 +1,19 @@
 <?php
-if(!$_POST["domain_uuid"] && !$_POST['domain_name']) {
-    echo json_encode(array("error" => "missing required parameter domain_uuid or domain_name"));
-    die();
-}
+$required_params = array();
 
-if($_POST['domain_uuid']) {
-    $sql = "SELECT * FROM v_domains WHERE domain_uuid = :domain_uuid";
-    $parameters['domain_uuid'] = $_POST['domain_uuid'];
-} else {
-    $sql = "SELECT * FROM v_domains WHERE domain_name = :domain_name";
-    $parameters['domain_name'] = $_POST['domain_name'];
+function do_action($body) {
+    if(!$body->domain_uuid && !$body->domain_name) {
+        return array("error" => "missing required parameter domain_uuid or domain_name");
+    }
+
+    if($body->domain_uuid) {
+        $sql = "SELECT * FROM v_domains WHERE domain_uuid = :domain_uuid";
+        $parameters['domain_uuid'] = $body->domain_uuid;
+    } else {
+        $sql = "SELECT * FROM v_domains WHERE domain_name = :domain_name";
+        $parameters['domain_name'] = $body->domain_name;
+    }
+    $database = new database;
+    $extension = $database->select($sql, $parameters, 'row');
+    return $extension;
 }
-$database = new database;
-$extension = $database->select($sql, $parameters, 'row');
-echo json_encode($extension);

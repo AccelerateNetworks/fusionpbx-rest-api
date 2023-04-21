@@ -1,9 +1,9 @@
 # FusionPBX REST API
-This README is lacking. For now. This is an app for [FusionPBX](http://www.fusionpbx.com/).
+An HTTP API for [FusionPBX](http://www.fusionpbx.com/).
 
 # Install
-To install it, clone into fusionpbx's `app/` folder and run the menu upgrades (Log into the web
-  interface, Advanced -> Upgrade, check Schema and Menu Defaults, press Execute).
+To install it, clone into fusionpbx's `app/` folder. Make sure this repo clones into a folder called `rest_api`.
+Then log into the FusionPBX web interface, select Advanced -> Upgrade, check Schema and Menu Defaults, press Execute.
 
 # Use
 
@@ -11,11 +11,11 @@ To use the API you must have an API token. superadmins can generate these by ope
 
 Note that when generating a token, the token is shown once and cannot be shown again (you can always generate another one and delete the missed one)
 
-The API endpoint is displayed on the API token page, and is generally in the format `https://<your fusionpbx>/app/rest_api/rest.php`. All requests to it are HTTP POST requests,
-and must include an `action` parameter with a value of the action you wish to use (see below). For example, the `domain-details` action with parameter `domain_name=fusionpbx.example.net`:
+The API endpoint is displayed on the API token page, and is generally in the format `https://<your fusionpbx>/app/rest_api/rest.php`. All requests to it are HTTP POST requests with a JSON
+body that must include an `action` parameter with a value of the action you wish to use (see below). For example, the `domain-details` action with parameter `domain_name=fusionpbx.example.net`:
 
 ```
-$ curl -s --user "5bc14e83-fc4e-4578-99b8-c7151eb2ec54:jM2GQuYgQTkIGE6nJ2SP" -d action=domain-details -d domain_name=fusionpbx.example.net https://fusionpbx.example.net/app/rest_api/rest.php | jq
+$ curl -s --user "5bc14e83-fc4e-4578-99b8-c7151eb2ec54:jM2GQuYgQTkIGE6nJ2SP" -d '{"action": "domain-details", "domain_name": "fusionpbx.example.net"}' https://fusionpbx.example.net/app/rest_api/rest.php | jq
 {
   "domain_uuid": "3a644e67-de8f-4798-b07e-6f22c33a656e",
   "domain_parent_uuid": null,
@@ -64,6 +64,8 @@ looks up details of a domain. Mostly useful for converting between domain uuid a
 |---------------|----------|-------------|
 | `domain_uuid` | yes      | Domain to add extension to |
 | `extension`   | yes      | Extension (number) to create |
+| `caller_id_name` | no    | Caller ID name to set for outbound calls from the extension |
+| `caller_id_number` | no  | Caller ID number to set for outbound calls from the extension |
 
 create an extension
 

@@ -1,16 +1,15 @@
 <?php
 
-function ensure_parameters(array $params) {
+function ensure_parameters($body, $required) {
     $missing = array();
-    foreach($params as $param) {
-        if(!$_POST[$param]) {
+    foreach($required as $param) {
+        if(!$body->{$param}) {
             $missing = $param;
         }
     }
     if(sizeof($missing) == 0) {
-        return true;
+        return false;
     }
 
-    echo json_encode(array("error" => "missing required parameter(s)", "missing_parameters" => $missing));
-    die();
+    return json_encode(array("error" => "missing required parameter(s)", "missing_parameters" => $missing));
 }
