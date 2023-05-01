@@ -21,7 +21,7 @@ function do_action($body) {
   if($body->caller_id_name) {
     $cid_name = ",effective_caller_id_name=".$body->caller_id_name;
   }
-  $leg_prefix = "{ignore_early_media=true,originate_timeout=30,effective_caller_id_number=".$body->caller_id.$cid_name."}loopback/";
+  $leg_prefix = "{ignore_early_media=true,originate_timeout=30,effective_caller_id_number=".$body->caller_id_number.$cid_name."}loopback/";
   $leg_suffix = "/".$domain_name;
 
   $command = "api originate ".$leg_prefix.$body->destination_b.$leg_suffix." '&bridge(".$leg_prefix.$body->destination_a.$leg_suffix.")'";
