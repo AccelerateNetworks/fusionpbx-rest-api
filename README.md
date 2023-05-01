@@ -111,3 +111,10 @@ Call one number (destination_a) and connect the call to another number (destinat
 Note that the call is ended when destination_a ends the call, so if one leg isn't expected to hang up, make it destination_b.
 
 Use `destination_b=*9664` to indefinitely play hold music to destination_a.
+
+## `cdr-list`
+| Parameter          | Required | Description |
+|--------------------|----------|-------------|
+| `domain_uuid`      | yes      | domain to list call detail records from |
+
+returns the the last 100 call detail records.
