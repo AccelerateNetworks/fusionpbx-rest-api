@@ -16,10 +16,9 @@ function do_action($body) {
     return json_encode(array("error" => "internal_server_error", "message" => "failed to connect to FreeSWITCH"));
   }
 
-
   $cid_name = "";
   if($body->caller_id_name) {
-    $cid_name = ",effective_caller_id_name=".$body->caller_id_name;
+    $cid_name = ",effective_caller_id_name=".urlencode($body->caller_id_name);
   }
   $leg_prefix = "{ignore_early_media=true,originate_timeout=30,effective_caller_id_number=".$body->caller_id_number.$cid_name."}loopback/";
   $leg_suffix = "/".$domain_name;
