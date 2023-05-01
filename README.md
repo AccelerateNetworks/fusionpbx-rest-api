@@ -96,3 +96,18 @@ List number, UUID and a few other details of all extensions on a given domain.
 | `strategy`     | yes      | one of: `simultaneous`, `sequence`, `enterprise`, `rollover` or `random` |
 
 Create a ring group
+
+## `originate`
+| Parameter          | Required | Description |
+|--------------------|----------|-------------|
+| `domain_uuid`      | yes      | domain to originate the call from |
+| `caller_id_number` | yes      | caller ID number to display for both legs of the call |
+| `caller_id_name`   | no       | an optional caller ID name to request. typically will be delivered for internal calls and stripped by the upstream provider for external calls |
+| `destination_a`    | yes      | the number to call first  |
+| `destination_b`    | yes      | the number to call second |
+
+Call one number (destination_a) and connect the call to another number (destination_b) when it's picked up. The selected domain's internal dialplan is used, so internal extensions may be dialed.
+
+Note that the call is ended when destination_a ends the call, so if one leg isn't expected to hang up, make it destination_b.
+
+Use `destination_b=*9664` to indefinitely play hold music to destination_a.
