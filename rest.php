@@ -42,6 +42,14 @@ if($validation_errors) {
 
 $action = strtolower($body->action);
 $file = __DIR__."/actions/".$action.".php";
+if($body->app) {
+	$app = $body->app;
+	include(__DIR__."/../".$app."/app_api.php");
+	if($app_api[$app][$action]) {
+		$file = __DIR__."/../".$app."/".$app_api[$app][$action];
+	}
+}
+
 if(!file_exists($file)) {
 	return_error("unknown action");
 	die();
