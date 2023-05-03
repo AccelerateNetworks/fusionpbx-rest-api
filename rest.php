@@ -44,9 +44,15 @@ $action = strtolower($body->action);
 $file = __DIR__."/actions/".$action.".php";
 if($body->app) {
 	$app = $body->app;
-	include(__DIR__."/../".$app."/app_api.php");
+	$app_dir = __DIR__."/../".$app;
+	$app_index = $app_dir."/app_api.php";
+	if(!file_exists($app_index)) {
+		echo json_encode(array("error" => "unknown app"));
+		die();
+	}
+	include($app_index);
 	if($app_api[$app][$action]) {
-		$file = __DIR__."/../".$app."/".$app_api[$app][$action];
+		$file = $app_dir."/".$app_api[$app][$action];
 	}
 }
 
@@ -55,7 +61,7 @@ if(!file_exists($file)) {
 	die();
 }
 
-require($file);
+include($file);
 $validation_errors = ensure_parameters($body, $required_params);
 if($validation_errors) {
 	echo json_encode($validation_errors);
