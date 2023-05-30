@@ -3,7 +3,7 @@ $required_params = array("domain_uuid", "name", "extension", "destinations", "st
 
 function do_action($body) {
     $sql = "SELECT domain_name FROM v_domains WHERE domain_uuid = :domain_uuid";
-    $parameters['domain_uuid'] = $_POST['domain_uuid'];
+    $parameters['domain_uuid'] = $body->domain_uuid;
     $database = new database;
     $domain_name = $database->select($sql, $parameters, 'column');
     unset($parameters);
@@ -12,8 +12,8 @@ function do_action($body) {
     }
 
     $sql = "SELECT ring_group_uuid FROM v_ring_groups WHERE ring_group_extension = :extension AND domain_uuid = :domain_uuid";
-    $parameters['extension'] = $_POST['extension'];
-    $parameters['domain_uuid'] = $_POST['domain_uuid'];
+    $parameters['extension'] = $body->extension;
+    $parameters['domain_uuid'] = $body->domain_uuid;
     $database = new database;
     if($database->select($sql, $parameters, 'column')) {
         return array("error" => "ring group already exists");
@@ -24,7 +24,7 @@ function do_action($body) {
     $dialplan_uuid = uuid();
 
     $ring_group_destinations = array();
-    $requested_destinations = json_decode($_POST['destinations']);
+    $requested_destinations = json_decode($body->destinations);
     if(sizeof($requested_destinations) == 0) {
         return_error("no destinations specified. Value must be a JSON array");
     }
@@ -38,17 +38,17 @@ function do_action($body) {
             "destination_timeout" => "30",
             "destination_prompt" => "",
             "destination_enabled" => "true",
-            "domain_uuid" => $_POST['domain_uuid']
+            "domain_uuid" => $body->domain_uuid
         );
     }
 
     $array["ring_groups"][] = array(
         "ring_group_uuid" => $ring_group_uuid,
-        "domain_uuid" => $_POST['domain_uuid'],
-        "ring_group_name" => $_POST['name'],
-        "ring_group_extension" => $_POST['extension'],
+        "domain_uuid" => $body->domain_uuid,
+        "ring_group_name" => $body->name,
+        "ring_group_extension" => $body->extension,
         "ring_group_greeting" => "",
-        "ring_group_strategy" => $_POST['strategy'],
+        "ring_group_strategy" => $body->strategy,
         "ring_group_call_timeout" => "30",
         "ring_group_caller_id_name" => "",
         "ring_group_caller_id_number" => "",
@@ -70,8 +70,8 @@ function do_action($body) {
         "ring_group_destinations" => $ring_group_destinations
     );
 
-    $dialplan_xml = "<extension name=\"".$_POST['name']."\" continue=\"\" uuid=\"".$dialplan_uuid."\">\n";
-    $dialplan_xml .= "\t<condition field=\"destination_number\" expression=\"^".$_POST['extension']."$\">\n";
+    $dialplan_xml = "<extension name=\"".$body->name."\" continue=\"\" uuid=\"".$dialplan_uuid."\">\n";
+    $dialplan_xml .= "\t<condition field=\"destination_number\" expression=\"^".$body->extension."$\">\n";
     $dialplan_xml .= "\t\t<action application=\"ring_ready\" data=\"\" />\n";
     $dialplan_xml .= "\t\t<action application=\"set\" data=\"ring_group_uuid=".$ring_group_uuid."\" />\n";
     $dialplan_xml .= "\t\t<action application=\"lua\" data=\"app.lua ring_groups\" />\n";
@@ -79,10 +79,10 @@ function do_action($body) {
     $dialplan_xml .= "</extension>";
 
     $array["dialplans"][] = array(
-        "domain_uuid" => $_POST['domain_uuid'],
+        "domain_uuid" => $body->domain_uuid,
         "dialplan_uuid" => $dialplan_uuid,
-        "dialplan_name" => $_POST['name'],
-        "dialplan_number" => $_POST['extension'],
+        "dialplan_name" => $body->name,
+        "dialplan_number" => $body->extension,
         "dialplan_context" => $domain_name,
         "dialplan_continue" => "false",
         "dialplan_xml" => $dialplan_xml,

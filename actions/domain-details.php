@@ -3,7 +3,7 @@ $required_params = array();
 
 function do_action($body) {
     if(!$body->domain_uuid && !$body->domain_name) {
-        return array("error" => "missing required parameter domain_uuid or domain_name");
+        return array("error" => "missing required parameter domain_uuid or domain_name", "code" => 400);
     }
 
     if($body->domain_uuid) {
@@ -14,6 +14,9 @@ function do_action($body) {
         $parameters['domain_name'] = $body->domain_name;
     }
     $database = new database;
-    $extension = $database->select($sql, $parameters, 'row');
-    return $extension;
+    $domain = $database->select($sql, $parameters, 'row');
+    if(!$domain) {
+        return array("error" => "domain not found", "code" => 404);
+    }
+    return $domain;
 }

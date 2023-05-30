@@ -8,14 +8,14 @@ function do_action($body) {
     $domain_name = $database->select($sql, $parameters, 'column');
     unset($parameters);
     if(!$domain_name) {
-        return array("error" => "domain not found");
+        return array("error" => "domain not found", "code" => 400);
     }
 
     $sql = "SELECT destination_uuid FROM v_destinations WHERE destination_number = :number";
     $parameters['number'] = $body->number;
     $database = new database;
     if($database->select($sql, $parameters, 'column')) {
-        return array("error" => "number already routed");
+        return array("error" => "number already routed", "code" => 400);
     }
     unset($parameters);
 

@@ -68,5 +68,8 @@ function do_action($body) {
     $parameters['extension'] = $body->extension;
     $database = new database;
     $extension = $database->select($sql, $parameters, 'row');
+    if(!$extension) {
+        return array("error" => "extension not found", "code" => 404);
+    }
     echo $extension;
 }

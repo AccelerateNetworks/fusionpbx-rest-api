@@ -8,7 +8,7 @@ function do_action($body) {
   $domain_name = $database->select($sql, $parameters, 'column');
   unset($parameters);
   if(!$domain_name) {
-      return array("error" => "domain not found");
+      return array("error" => "domain not found", "code" => 404);
   }
 
   $fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
