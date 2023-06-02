@@ -2,7 +2,7 @@
 function parse_fs($command) {
   $fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
   if (!$fp) {
-    die(json_encode(array("success" => false, "reason" => "Failed to connect to event socket")));
+    return array("error" => "Failed to connect to event socket");
   }
 
   $response = event_socket_request($fp, $command);
@@ -12,7 +12,7 @@ function parse_fs($command) {
   $status = array_pop($lines);
 
   if($status != "+OK") {
-    die(json_encode(array("success" => false, "reason" => $status)));
+    return array("error" => "freeswitch rejected request", "details" => $status);
   }
 
   $keys = explode("|", array_shift($lines));

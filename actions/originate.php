@@ -13,7 +13,7 @@ function do_action($body) {
 
   $fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
   if (!$fp) {
-    return json_encode(array("error" => "internal_server_error", "message" => "failed to connect to FreeSWITCH"));
+    return array("error" => "internal_server_error", "message" => "failed to connect to FreeSWITCH");
   }
 
   $cid_name = "";

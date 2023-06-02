@@ -11,5 +11,5 @@ function ensure_parameters($body, $required) {
         return false;
     }
 
-    return json_encode(array("error" => "missing required parameter(s)", "missing_parameters" => $missing));
+    return array("error" => "missing required parameter(s)", "missing_parameters" => $missing);
 }
