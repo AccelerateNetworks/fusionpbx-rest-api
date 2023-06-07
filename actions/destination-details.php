@@ -8,5 +8,11 @@ function do_action($body) {
     if(!$extension) {
         return array("error" => "no such destination", "code" => 404);
     }
+
+    // destination_actions is JSON-encoded in the DB. parse it here (#5)
+    if($extension['destination_actions']) {
+        $extension['destination_actions'] = json_decode($extension['destination_actions']);
+    }
+
     return $extension;
 }
