@@ -10,6 +10,7 @@ function return_error($msg, $code=500) {
 }
 
 if(!isset($_SERVER['PHP_AUTH_USER'])) {
+	error_log("rejecting request with no auth");
 	return_error("unauthorized", 401);
 }
 
@@ -19,11 +20,13 @@ $parameters['key_id'] = $_SERVER['PHP_AUTH_USER'];
 $database = new database;
 $secret = $database->select($sql, $parameters, 'column');
 if(!$secret) {
+	error_log("rejecting request with invalid token identifier (".$_SERVER['PHP_AUTH_USER'].")");
 	return_error("unauthorized", 401);
 }
 
 // verify the hash
 if(password_verify($secret, $_SERVER['PHP_AUTH_PW'])) {
+	error_log("rejecting request with valid token identifier but invalid secret");
 	return_error("unauthorized", 401);
 }
 
