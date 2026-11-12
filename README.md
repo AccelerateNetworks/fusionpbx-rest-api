@@ -118,3 +118,126 @@ Use `destination_b=*9664` to indefinitely play hold music to destination_a.
 | `domain_uuid`      | yes      | domain to list call detail records from |
 
 returns the the last 100 call detail records.
+
+## Linphone
+These actions manage Linphone clients and profiles for the [fusionpbx-linphone](https://github.com/AccelerateNetworks/fusionpbx-linphone) app, and do the same
+things as its web UI. They return HTTP 501 if that app isn't installed. Devices and profiles always belong to a domain, so every action takes a `domain_uuid`.
+
+Devices are returned in this format. `provisioning_url` is the URL (or QR code contents) a Linphone client uses to set itself up, and contains the device's
+provisioning secret, so treat it like a password. `profiles` is a list of the UUIDs of the profiles assigned to the device.
+
+```json
+{
+  "device_uuid": "0b3ac2b4-7d5f-4b61-9a6e-0f3b5d8e2c11",
+  "domain_uuid": "3a644e67-de8f-4798-b07e-6f22c33a656e",
+  "extension_uuid": "5a848d4e-a3c2-4bd6-8159-6b1366baffdd",
+  "extension": "100",
+  "name": "front desk laptop",
+  "user_agent": "Linphone-Desktop/5.2.6 (front-desk) Windows/10 Qt/5.15.2 LinphoneSDK/5.3.72",
+  "provisioning_url": "https://fusionpbx.example.net/app/linphone/provision/index.php?token=...",
+  "profiles": ["e1d0c7f8-2a4b-4c39-8f1e-6d2b9a7c5e30"]
+}
+```
+
+## `linphone-device-list`
+| Parameter        | Required | Description |
+|------------------|----------|-------------|
+| `domain_uuid`    | yes      | Domain to list Linphone devices on |
+| `extension_uuid` | no       | Only list devices for this extension |
+
+List Linphone devices on a domain.
+
+## `linphone-device-details`
+| Parameter     | Required | Description |
+|---------------|----------|-------------|
+| `domain_uuid` | yes      | Domain the device is on |
+| `device_uuid` | yes      | Device to look up |
+
+## `linphone-device-create`
+| Parameter        | Required | Description |
+|------------------|----------|-------------|
+| `domain_uuid`    | yes      | Domain to add the device to |
+| `extension_uuid` | yes      | Extension the device registers as. Must be on the same domain |
+| `name`           | no       | Name for the device. If left blank, it is filled in from the client's hostname the first time it provisions |
+| `profiles`       | no       | JSON array of profile UUIDs to assign to the device |
+
+Create a Linphone device and return it, including the `provisioning_url` to give to the client.
+
+```
+$ curl -s --user "$KEY_ID:$KEY_SECRET" -d '{"action": "linphone-device-create", "domain_uuid": "3a644e67-de8f-4798-b07e-6f22c33a656e", "extension_uuid": "5a848d4e-a3c2-4bd6-8159-6b1366baffdd"}' https://fusionpbx.example.net/app/rest_api/rest.php
+```
+
+## `linphone-device-update`
+| Parameter                        | Required | Description |
+|----------------------------------|----------|-------------|
+| `domain_uuid`                    | yes      | Domain the device is on |
+| `device_uuid`                    | yes      | Device to update |
+| `extension_uuid`                 | no       | Move the device to a different extension on the same domain |
+| `name`                           | no       | New name for the device |
+| `profiles`                       | no       | JSON array of profile UUIDs. Replaces the device's profiles with exactly this list; `[]` removes them all |
+| `regenerate_provisioning_secret` | no       | `true` to issue a new provisioning secret. The old provisioning URL and QR code stop working |
+
+Update a Linphone device. Only the parameters included are changed. Returns the updated device.
+Changes reach a client the next time it fetches its provisioning URL.
+
+## `linphone-device-delete`
+| Parameter     | Required | Description |
+|---------------|----------|-------------|
+| `domain_uuid` | yes      | Domain the device is on |
+| `device_uuid` | yes      | Device to delete |
+
+Delete a Linphone device and its profile assignments. Its provisioning URL stops working. The extension itself is not touched,
+so a client that is already set up can still register until the extension's password is changed.
+
+## `linphone-profile-list`
+| Parameter     | Required | Description |
+|---------------|----------|-------------|
+| `domain_uuid` | yes      | Domain to list profiles on |
+
+List Linphone profiles on a domain, with how many settings each has and how many devices it is assigned to.
+
+## `linphone-profile-details`
+| Parameter      | Required | Description |
+|----------------|----------|-------------|
+| `domain_uuid`  | yes      | Domain the profile is on |
+| `profile_uuid` | yes      | Profile to look up |
+
+Returns a profile, its settings, and the UUIDs of the devices it is assigned to:
+
+```json
+{
+  "profile_uuid": "e1d0c7f8-2a4b-4c39-8f1e-6d2b9a7c5e30",
+  "domain_uuid": "3a644e67-de8f-4798-b07e-6f22c33a656e",
+  "name": "video off",
+  "settings": {"video.automatically_accept": "0", "video.automatically_initiate": "0"},
+  "devices": ["0b3ac2b4-7d5f-4b61-9a6e-0f3b5d8e2c11"]
+}
+```
+
+## `linphone-profile-create`
+| Parameter     | Required | Description |
+|---------------|----------|-------------|
+| `domain_uuid` | yes      | Domain to create the profile on |
+| `name`        | yes      | Name for the profile |
+| `settings`    | no       | JSON object of Linphone config settings, keyed `section.key`, e.g. `{"sip.media_encryption": "srtp"}`. Values may be strings, numbers or booleans (sent as `1`/`0`) |
+
+Create a Linphone profile and return it in the same format as `linphone-profile-details`.
+
+## `linphone-profile-update`
+| Parameter          | Required | Description |
+|--------------------|----------|-------------|
+| `domain_uuid`      | yes      | Domain the profile is on |
+| `profile_uuid`     | yes      | Profile to update |
+| `name`             | no       | New name for the profile |
+| `settings`         | no       | JSON object of settings to add or change, in the same format as `linphone-profile-create`. A `null` value deletes that setting. Settings not included are left alone |
+| `replace_settings` | no       | `true` to delete every existing setting not included in `settings`, so the profile ends up with exactly `settings` |
+
+Update a Linphone profile. Returns the updated profile.
+
+## `linphone-profile-delete`
+| Parameter      | Required | Description |
+|----------------|----------|-------------|
+| `domain_uuid`  | yes      | Domain the profile is on |
+| `profile_uuid` | yes      | Profile to delete |
+
+Delete a Linphone profile and its settings, and unassign it from all devices. The response's `devices_unassigned` lists the devices it was removed from.
