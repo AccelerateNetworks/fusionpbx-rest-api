@@ -24,8 +24,8 @@ if(!$secret) {
 	return_error("unauthorized", 401);
 }
 
-// verify the hash
-if(password_verify($secret, $_SERVER['PHP_AUTH_PW'])) {
+// verify the supplied secret against the stored hash
+if(!password_verify($_SERVER['PHP_AUTH_PW'] ?? '', $secret)) {
 	error_log("rejecting request with valid token identifier but invalid secret");
 	return_error("unauthorized", 401);
 }
