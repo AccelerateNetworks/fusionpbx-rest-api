@@ -3,8 +3,8 @@
 function ensure_parameters($body, $required) {
     $missing = array();
     foreach($required as $param) {
-        if(!$body->{$param}) {
-            $missing = $param;
+        if(!is_object($body) || !isset($body->{$param}) || $body->{$param} === "") {
+            $missing[] = $param;
         }
     }
     if(sizeof($missing) == 0) {

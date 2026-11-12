@@ -85,6 +85,38 @@ get all details of an extension
 
 List number, UUID and a few other details of all extensions on a given domain.
 
+## `extension-update`
+| Parameter          | Required | Description |
+|--------------------|----------|-------------|
+| `domain_uuid`      | yes      | Domain the extension is on |
+| `extension_uuid`   | yes      | Extension (by UUID) to update |
+| `caller_id_name`   | no       | Sets the effective, outbound and emergency caller ID name, like `extension-create`. An explicit `*_caller_id_name` takes precedence |
+| `caller_id_number` | no       | Same as `caller_id_name`, for the caller ID number |
+
+Update an extension. Any of the following fields may also be included, and only the fields included are changed:
+`number_alias`, `password` (at least 8 characters), `effective_caller_id_name`, `effective_caller_id_number`, `outbound_caller_id_name`, `outbound_caller_id_number`,
+`emergency_caller_id_name`, `emergency_caller_id_number`, `directory_first_name`, `directory_last_name`, `directory_visible`, `directory_exten_visible`, `limit_max`,
+`limit_destination`, `missed_call_app`, `missed_call_data`, `toll_allow`, `call_timeout`, `call_group`, `call_screen_enabled`, `user_record`, `hold_music`, `auth_acl`,
+`cidr`, `sip_force_contact`, `sip_force_expires`, `mwi_account`, `sip_bypass_media`, `absolute_codec_string`, `force_ping`, `dial_string`, `do_not_disturb`,
+`forward_all_destination`, `forward_all_enabled`, `forward_busy_destination`, `forward_busy_enabled`, `forward_no_answer_destination`, `forward_no_answer_enabled`,
+`forward_user_not_registered_destination`, `forward_user_not_registered_enabled`, `max_registrations`, `enabled`, `description`. Boolean fields accept JSON `true`/`false`.
+
+The extension number itself cannot be changed; delete and recreate the extension instead. Returns the updated extension, without its SIP password.
+
+```
+$ curl -s --user "$KEY_ID:$KEY_SECRET" -d '{"action": "extension-update", "domain_uuid": "3a644e67-de8f-4798-b07e-6f22c33a656e", "extension_uuid": "5a848d4e-a3c2-4bd6-8159-6b1366baffdd", "do_not_disturb": true}' https://fusionpbx.example.net/app/rest_api/rest.php
+```
+
+## `extension-delete`
+| Parameter          | Required | Description |
+|--------------------|----------|-------------|
+| `domain_uuid`      | yes      | Domain the extension is on |
+| `extension_uuid`   | yes      | Extension (by UUID) to delete |
+| `delete_voicemail` | no       | `true` to also delete the extension's voicemail box, messages and greetings. Defaults to keeping them |
+
+Delete an extension, along with what FusionPBX's own extension delete removes: its user assignments, follow me, and ring group destinations that point at its number or number alias.
+Recording files on disk are not removed.
+
 
 ## `ringgroup-create`
 | Parameter      | Required | Description |
