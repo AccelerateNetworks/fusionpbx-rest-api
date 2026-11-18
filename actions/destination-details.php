@@ -1,18 +1,32 @@
 <?php
-$required_params = array("number");
+require_once __DIR__."/../lib/destinations.php";
+$required_params = array();
+
 function do_action($body) {
-    $sql = "SELECT * FROM v_destinations WHERE destination_number = :number";
-    $parameters['number'] = $body->number;
-    $database = new database;
-    $extension = $database->select($sql, $parameters, 'row');
-    if(!$extension) {
+    if(isset($body->destination_uuid) && $body->destination_uuid !== "") {
+        // look up by UUID, which requires the domain
+        if(!isset($body->domain_uuid) || $body->domain_uuid === "") {
+            return array("error" => "missing required parameter(s)", "missing_parameters" => array("domain_uuid"), "code" => 400);
+        }
+        $destination = destination_find($body->domain_uuid, $body->destination_uuid, null);
+    } elseif(isset($body->number) && $body->number !== "") {
+        // numbers are unique across domains, so the domain is optional here
+        $sql = "SELECT * FROM v_destinations WHERE destination_number = :number";
+        $parameters['number'] = (string)$body->number;
+        if(isset($body->domain_uuid) && $body->domain_uuid !== "") {
+            $sql .= " AND domain_uuid = :domain_uuid";
+            $parameters['domain_uuid'] = $body->domain_uuid;
+        }
+        $database = new database;
+        $destination = $database->select($sql, $parameters, 'row');
+    } else {
+        return array("error" => "missing required parameter(s)", "missing_parameters" => array("number or destination_uuid"), "code" => 400);
+    }
+
+    if(!$destination) {
         return array("error" => "no such destination", "code" => 404);
     }
 
     // destination_actions is JSON-encoded in the DB. parse it here (#5)
-    if($extension['destination_actions']) {
-        $extension['destination_actions'] = json_decode($extension['destination_actions']);
-    }
-
-    return $extension;
+    return destination_format($destination);
 }
